@@ -14,6 +14,23 @@ Code2Vid is an AI-powered tool that automatically generates engaging, educationa
 - **📱 Multiple Languages**: Support for Python, JavaScript, Java, C++, and more
 - **🎯 Audience Targeting**: Tailored explanations for beginner, intermediate, or advanced developers
 
+## 🎥 Video Demonstrations
+
+### Avatar Mode with Speech Bubbles
+The avatar mode features an AI assistant that "reads" the explanations with speech bubbles and karaoke-style text highlighting:
+
+![Avatar Mode Demo](docs/gifs/avatar_demo.gif)
+
+### Typewriter Mode with Synced Text
+The typewriter mode reveals text character-by-character, perfectly synchronized with the narration:
+
+![Typewriter Mode Demo](docs/gifs/typewriter_demo_optimized.gif)
+
+### Simple Clean Layout
+For a minimalist approach, the simple mode focuses on clean code presentation:
+
+![Simple Mode Demo](docs/gifs/simple_demo.gif)
+
 ## 🚀 Quick Start
 
 ### 1. Installation
