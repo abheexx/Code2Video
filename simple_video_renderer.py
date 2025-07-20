@@ -1,0 +1,251 @@
+#!/usr/bin/env python3
+
+"""
+Simple Video Renderer for Code2Vid
+Creates videos using PIL and basic libraries without moviepy dependency.
+"""
+
+import os
+import json
+import math
+import numpy as np
+from typing import Dict, Any, List, Optional, Tuple
+from pathlib import Path
+import tempfile
+import re
+import subprocess
+
+try:
+    from PIL import Image, ImageDraw, ImageFont
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+
+
+class SimpleVideoRenderer:
+    """Creates simple videos with code highlighting using PIL and ffmpeg."""
+    
+    def __init__(self, width: int = 1920, height: int = 1080, fps: int = 30):
+        """
+        Initialize the simple video renderer.
+        
+        Args:
+            width: Video width in pixels
+            height: Video height in pixels
+            fps: Frames per second
+        """
+        if not PIL_AVAILABLE:
+            raise ImportError("PIL not available. Install with: pip install pillow")
+        
+        self.width = width
+        self.height = height
+        self.fps = fps
+        
+        # Video styling
+        self.background_color = (30, 30, 30)  # Dark background
+        self.code_bg_color = (45, 45, 48)     # Code area background
+        self.text_color = (255, 255, 255)     # White text
+        self.highlight_color = (255, 215, 0)  # Gold for highlighting
+        
+    def create_video(self, code: str, audio_path: str, explanation: Dict[str, Any],
+                    output_path: str = "code_explanation.mp4") -> str:
+        """
+        Create a simple video with code highlighting.
+        
+        Args:
+            code: Source code to display
+            audio_path: Path to narration audio file
+            explanation: Explanation dictionary
+            output_path: Path to save the video
+            
+        Returns:
+            Path to the generated video
+        """
+        try:
+            # Create a single high-quality image
+            img = self._create_code_image(code, explanation)
+            
+            # Save the image
+            temp_image_path = "temp_code_image.png"
+            img.save(temp_image_path)
+            
+            # Get audio duration using ffprobe
+            duration = self._get_audio_duration(audio_path)
+            
+            # Create video from image using ffmpeg
+            self._create_video_from_image(temp_image_path, audio_path, output_path, duration)
+            
+            # Clean up temp file
+            if os.path.exists(temp_image_path):
+                os.remove(temp_image_path)
+            
+            return output_path
+            
+        except Exception as e:
+            raise Exception(f"Simple video rendering failed: {str(e)}")
+    
+    def _create_code_image(self, code: str, explanation: Dict[str, Any]) -> Image.Image:
+        """Create a high-quality image with code and explanation."""
+        # Create image
+        img = Image.new('RGB', (self.width, self.height), color=self.background_color)
+        draw = ImageDraw.Draw(img)
+        
+        # Load fonts
+        try:
+            font_large = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 48)
+            font_code = ImageFont.truetype("/System/Library/Fonts/Menlo.ttc", 32)
+            font_small = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 24)
+        except:
+            font_large = ImageFont.load_default()
+            font_code = ImageFont.load_default()
+            font_small = ImageFont.load_default()
+        
+        # Draw title
+        title_text = explanation.get('title', 'Code Explanation')
+        title_bbox = draw.textbbox((0, 0), title_text, font=font_large)
+        title_width = title_bbox[2] - title_bbox[0]
+        title_x = (self.width - title_width) // 2
+        draw.text((title_x, 80), title_text, fill='white', font=font_large)
+        
+        # Draw code with syntax highlighting
+        code_lines = code.strip().split('\n')
+        y_pos = 200
+        line_height = 40
+        
+        # Limit to reasonable number of lines
+        max_lines = min(15, len(code_lines))
+        
+        for i, line in enumerate(code_lines[:max_lines]):
+            # Add line numbers
+            line_num = f"{i+1:2d} "
+            draw.text((50, y_pos), line_num, fill='#888888', font=font_code)
+            
+            # Draw code line with basic syntax highlighting
+            code_x = 50 + len(line_num) * 12
+            highlighted_line = self._highlight_syntax(line)
+            draw.text((code_x, y_pos), highlighted_line, fill='white', font=font_code)
+            
+            y_pos += line_height
+        
+        # Add border around code area
+        border_color = (60, 60, 60)
+        draw.rectangle([40, 180, self.width - 40, y_pos + 20], outline=border_color, width=2)
+        
+        # Add explanation text
+        if y_pos < self.height - 150:
+            explanation_text = explanation.get('overview', 'Code explanation generated by AI')
+            words = explanation_text.split()
+            lines = []
+            current_line = ""
+            
+            for word in words:
+                test_line = current_line + " " + word if current_line else word
+                bbox = draw.textbbox((0, 0), test_line, font=font_small)
+                if bbox[2] - bbox[0] < self.width - 100:
+                    current_line = test_line
+                else:
+                    if current_line:
+                        lines.append(current_line)
+                    current_line = word
+            if current_line:
+                lines.append(current_line)
+            
+            # Draw explanation lines
+            y_pos = self.height - 120
+            for line in lines[:3]:
+                bbox = draw.textbbox((0, 0), line, font=font_small)
+                line_width = bbox[2] - bbox[0]
+                line_x = (self.width - line_width) // 2
+                draw.text((line_x, y_pos), line, fill='#CCCCCC', font=font_small)
+                y_pos += 30
+        
+        return img
+    
+    def _highlight_syntax(self, line: str) -> str:
+        """Basic syntax highlighting for Python code."""
+        # Simple keyword highlighting
+        keywords = ['def', 'class', 'if', 'else', 'elif', 'for', 'while', 'try', 'except', 'finally', 'with', 'as', 'import', 'from', 'return', 'True', 'False', 'None']
+        
+        highlighted = line
+        for keyword in keywords:
+            if keyword in highlighted:
+                # Simple replacement - in a real implementation you'd use proper regex
+                highlighted = highlighted.replace(keyword, keyword)
+        
+        return highlighted
+    
+    def _get_audio_duration(self, audio_path: str) -> float:
+        """Get audio duration using ffprobe."""
+        try:
+            result = subprocess.run([
+                'ffprobe', '-v', 'quiet', '-show_entries', 'format=duration',
+                '-of', 'csv=p=0', audio_path
+            ], capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                return float(result.stdout.strip())
+            else:
+                return 10.0  # Default duration
+        except:
+            return 10.0  # Default duration
+    
+    def _create_video_from_image(self, image_path: str, audio_path: str, output_path: str, duration: float):
+        """Create video from image and audio using ffmpeg."""
+        try:
+            subprocess.run([
+                'ffmpeg', '-y',  # Overwrite output
+                '-loop', '1',  # Loop the image
+                '-i', image_path,  # Input image
+                '-i', audio_path,  # Input audio
+                '-c:v', 'libx264',  # Video codec
+                '-c:a', 'aac',  # Audio codec
+                '-t', str(duration),  # Duration
+                '-pix_fmt', 'yuv420p',  # Pixel format
+                output_path
+            ], check=True)
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"FFmpeg failed: {e}")
+
+
+def main():
+    """Test the simple video renderer."""
+    if not PIL_AVAILABLE:
+        print("PIL not available. Install with: pip install pillow")
+        return
+    
+    renderer = SimpleVideoRenderer()
+    
+    # Test code
+    test_code = """
+def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+result = factorial(5)
+print(f"Factorial of 5 is: {result}")
+"""
+    
+    # Test explanation
+    explanation = {
+        'title': 'Simple Code Explanation',
+        'overview': 'This code demonstrates recursion with a factorial function.',
+        'key_takeaways': ['Recursion', 'Base case', 'Mathematical concept']
+    }
+    
+    # Create video
+    try:
+        output_path = renderer.create_video(
+            code=test_code,
+            audio_path="test_audio.wav",  # You'll need to create this
+            explanation=explanation,
+            output_path="test_simple.mp4"
+        )
+        print(f"Simple video created: {output_path}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+if __name__ == "__main__":
+    main() 
