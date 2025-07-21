@@ -274,7 +274,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Use "simple" video style for quicker rendering
 - Close other applications during video generation
 
-## 📞 Support
+## Support
 
 If you encounter any issues:
 
