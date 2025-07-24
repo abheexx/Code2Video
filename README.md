@@ -1,27 +1,27 @@
-# 🎬 Code2Vid
+# Code2Vid
 
-**Turn code snippets into narrated explainer videos with AI**
+**AI-Powered Code Explanation Video Generator**
 
-Code2Vid is an AI-powered tool that automatically generates engaging, educational videos from code snippets. It uses GPT-4 to create clear explanations, converts them to speech using high-quality TTS engines, and renders professional videos with synchronized code highlighting.
+Code2Vid transforms code snippets into professional, narrated educational videos using advanced AI technology. The platform leverages GPT-4 for intelligent code analysis, high-quality text-to-speech engines for natural narration, and sophisticated video rendering for synchronized code highlighting.
 
-## ✨ Features
+## Key Features
 
-- **🤖 AI-Powered Explanations**: GPT-4 generates clear, beginner-friendly code explanations
-- **🎙️ High-Quality TTS**: Multiple text-to-speech engines (ElevenLabs, pyttsx3)
-- **🎥 Professional Videos**: Syntax-highlighted code with synchronized narration
-- **🎨 Multiple Video Styles**: Simple static display or animated code highlighting
-- **🌐 Web Interface**: Beautiful Streamlit app for easy paste-and-play usage
-- **📱 Multiple Languages**: Support for Python, JavaScript, Java, C++, and more
-- **🎯 Audience Targeting**: Tailored explanations for beginner, intermediate, or advanced developers
+- **AI-Powered Explanations**: GPT-4 generates clear, context-aware code explanations
+- **High-Quality TTS**: Multiple text-to-speech engines (ElevenLabs, pyttsx3) for natural narration
+- **Professional Video Output**: Syntax-highlighted code with perfectly synchronized narration
+- **Multiple Video Styles**: Simple static display, animated highlighting, typewriter effects, and avatar mode
+- **Web Interface**: Intuitive Streamlit application for seamless user experience
+- **Multi-Language Support**: Comprehensive support for Python, JavaScript, Java, C++, and more
+- **Audience Targeting**: Tailored explanations for beginner, intermediate, or advanced developers
 
-## 🎥 Video Demonstrations
+## Video Demonstrations
 
 ### Avatar Mode with Speech Bubbles
-The avatar mode features an AI assistant that "reads" the explanations with speech bubbles and karaoke-style text highlighting:
+The avatar mode features an AI assistant that presents explanations with speech bubbles and synchronized text highlighting:
 
 ![Avatar Mode Demo](docs/gifs/avatar_demo.gif)
 
-### Typewriter Mode with Synced Text
+### Typewriter Mode with Synchronized Text
 The typewriter mode reveals text character-by-character, perfectly synchronized with the narration:
 
 ![Typewriter Mode Demo](docs/gifs/typewriter_demo_optimized.gif)
@@ -31,7 +31,7 @@ For a minimalist approach, the simple mode focuses on clean code presentation:
 
 ![Simple Mode Demo](docs/gifs/simple_demo.gif)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Installation
 
@@ -62,7 +62,7 @@ streamlit run app.py
 
 Open your browser to `http://localhost:8501` and start creating videos!
 
-## 📖 Usage
+## Usage
 
 ### Web Interface (Recommended)
 
@@ -70,7 +70,7 @@ Open your browser to `http://localhost:8501` and start creating videos!
 2. **Enter your API keys** in the sidebar
 3. **Paste your code** in the text area
 4. **Configure settings** (language, difficulty, voice, etc.)
-5. **Click "Generate Video"** and wait for the magic!
+5. **Click "Generate Video"** and wait for processing
 
 ### Command Line
 
@@ -118,7 +118,7 @@ renderer = VideoRenderer()
 video_path = renderer.create_video(code, audio_path, explanation)
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 The project consists of four main modules:
 
@@ -141,12 +141,12 @@ The project consists of four main modules:
 - Synchronized audio-video rendering
 
 ### 4. `app.py` - Web Interface
-- Beautiful Streamlit interface
+- Intuitive Streamlit interface
 - Real-time preview and statistics
 - Example code snippets
 - Download functionality
 
-## 🎨 Video Styles
+## Video Styles
 
 ### Simple Style
 - Static code display with syntax highlighting
@@ -158,7 +158,7 @@ The project consists of four main modules:
 - Dynamic transitions between code parts
 - More engaging for complex explanations
 
-## 🎙️ TTS Engines
+## TTS Engines
 
 ### ElevenLabs (Recommended)
 - **Pros**: High-quality, natural-sounding voices
@@ -170,7 +170,7 @@ The project consists of four main modules:
 - **Cons**: Lower quality, robotic sound
 - **Best for**: Testing, personal use
 
-## 📁 Output Files
+## Output Files
 
 Each video generation creates:
 
@@ -178,7 +178,7 @@ Each video generation creates:
 - **`*_narration.wav`**: Audio narration file
 - **`*_simple.mp4`** or **`*_animated.mp4`**: Final video file
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -194,7 +194,7 @@ ELEVENLABS_API_KEY=your-elevenlabs-api-key  # Optional
 - **Background**: Dark theme (#1E1E1E)
 - **Code Area**: Slightly lighter (#2D2D30)
 
-## 📚 Examples
+## Examples
 
 The web interface includes several example code snippets:
 
@@ -204,7 +204,7 @@ The web interface includes several example code snippets:
 - **Quick Sort**: Divide-and-conquer algorithm
 - **Binary Search**: Efficient search algorithm
 
-## 🛠️ Development
+## Development
 
 ### Project Structure
 
@@ -226,7 +226,7 @@ Code2Vid/
 3. **New Video Style**: Create new method in `VideoRenderer`
 4. **New UI Feature**: Modify `app.py`
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -234,11 +234,11 @@ Code2Vid/
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **OpenAI**: For GPT-4 API
 - **ElevenLabs**: For high-quality TTS
@@ -246,7 +246,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **MoviePy**: For video processing
 - **pyttsx3**: For free TTS option
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -285,4 +285,4 @@ If you encounter any issues:
 
 ---
 
-**Happy coding and video creating! 🎬✨** 
+**Transform your code into engaging educational content with Code2Vid.** 
